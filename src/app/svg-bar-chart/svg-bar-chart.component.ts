@@ -25,7 +25,7 @@ export class SvgBarChartComponent implements OnInit {
     this.getData();
   }
 
-  private type(d) : DSVRowAny {
+  private type(d:DSVRowAny) : DSVRowAny {
     d.value = +d.value; // coerce to number
     return d;
   }

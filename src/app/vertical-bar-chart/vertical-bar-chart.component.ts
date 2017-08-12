@@ -2,6 +2,7 @@ import { Component,ElementRef, OnInit } from '@angular/core';
 
 import * as d3 from 'd3';
 import {D3, D3Service} from "d3-ng2-service";
+import {DSVRowAny} from "d3-dsv";
 
 
 @Component({
@@ -66,7 +67,7 @@ export class VerticalBarChartComponent implements OnInit {
       .attr("width", x.bandwidth);
     });
 
-    function type(d) {
+    function type(d:DSVRowAny) {
       d.value = +d.value; // coerce to number
       return d;
     }
