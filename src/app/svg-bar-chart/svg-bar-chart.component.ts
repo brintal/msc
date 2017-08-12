@@ -1,9 +1,10 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
-import * as d3 from 'd3'; //not using the d3 service cause d3-request is not available there but needed in this example.
-import {
-  Selection, BaseType, D3, D3Service
-} from 'd3-ng2-service';
-
+import {Component, ElementRef, OnInit} from '@angular/core';
+import {BaseType, D3, D3Service, Selection} from 'd3-ng2-service';
+import {DSVParsedArray, DSVRowAny} from "d3-dsv";
+import {HttpClient} from "@angular/common/http";
+import 'rxjs/Rx';
+import {ScaleLinear} from "d3-scale";
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-svg-bar-chart',
@@ -12,53 +13,69 @@ import {
 })
 export class SvgBarChartComponent implements OnInit {
 
-  private d3: D3;
   private parentNativeElement: any;
+  private http: HttpClient;
 
-  constructor(elementRef: ElementRef, d3Service: D3Service) {
-    this.d3 = d3Service.getD3();
+  constructor(elementRef: ElementRef, http: HttpClient) {
+    this.http = http;
     this.parentNativeElement = elementRef.nativeElement;
   }
 
   ngOnInit() {
-    var width = 420,
-    barHeight = 20;
-    let bar: Selection<BaseType, any, BaseType, undefined>;
+    this.getData();
+  }
 
-    var x = this.d3.scaleLinear()
-    .range([0, width]);
-
-    var chart = this.d3.select(".chart")
-    .attr("width", width);
+  private type(d) : DSVRowAny {
+    d.value = +d.value; // coerce to number
+    return d;
+  }
 
 
-    d3.tsv("/assets/data/svg-bar-chart-data.tsv", type, (error, data) => {
+  public getDataFromBackend() {
+    return this.http.get("/assets/data/svg-bar-chart-data.tsv", {responseType: 'text'});
+  }
 
-      x.domain([0, this.d3.max(data, (d) => d.value)]);
+  public getData() {
+    this.getDataFromBackend()
+      .subscribe((data: string) => {
+        console.log(data)
+        this.handleData(data);
+      });
+  }
 
-      chart.attr("height", barHeight * data.length);
+  private handleData(data: string) {
 
-      bar = chart.selectAll("g")
-      .data(data)
+    let width: number = 420;
+    let barHeight: number = 20;
+    let bar: Selection<BaseType, any, SVGElement, {}>;
+    let scale: ScaleLinear<number, number>;
+    let chart: Selection<SVGElement, {}, HTMLElement, {}>;
+    let parsedData: DSVParsedArray<DSVRowAny>;
+
+    scale = d3.scaleLinear().range([0, width]);
+    chart = d3.select<SVGElement, {}>(".chart").attr("width", width);
+    parsedData = d3.tsvParse(data, this.type);
+
+    scale.domain([0, d3.max(parsedData, (d) => d.value)]);
+
+    chart.attr("height", barHeight * parsedData.length);
+
+    bar = chart.selectAll("g")
+      .data(parsedData)
       .enter().append("g")
       .attr("transform", (d, i) => "translate(0," + i * barHeight + ")");
 
-      bar.append("rect")
-      .attr("width", (d) => x(d.value))
+    bar.append("rect")
+      .attr("width", (d) => scale(d.value))
       .attr("height", barHeight - 1);
 
-      bar.append("text")
-      .attr("x", (d) => x(d.value) - 3)
+    bar.append("text")
+      .attr("x", (d) => scale(d.value) - 3)
       .attr("y", barHeight / 2)
       .attr("dy", ".35em")
-      .text((d)=> d.value );
+      .text((d) => d.value);
 
-    });
 
-    function type(d) {
-      d.value = +d.value; // coerce to number
-      return d;
-    }
   }
 
 }

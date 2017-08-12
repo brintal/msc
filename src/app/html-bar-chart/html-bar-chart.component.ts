@@ -1,5 +1,7 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {D3, D3Service,} from 'd3-ng2-service';
+import {ScaleLinear} from "d3-scale";
+
 
 @Component({
   selector: 'app-html-bar-chart',
@@ -19,11 +21,12 @@ export class HtmlBarChartComponent implements OnInit {
 
   ngOnInit() {
     console.log("ngOnInit() called");
-    //this.d3.select("h1").style("background-color", "blue");
 
-    var data = [4, 8, 15, 16, 23, 42];
+    let data: number[];
+    let x: ScaleLinear<number, number>;
 
-    var x = this.d3.scaleLinear()
+    data = [4, 8, 15, 16, 23, 42];
+    x = this.d3.scaleLinear()
       .domain([0, this.d3.max(data)])
       .range([0, 420]);
 
@@ -31,12 +34,8 @@ export class HtmlBarChartComponent implements OnInit {
       .selectAll("div")
       .data(data)
       .enter().append("div")
-      .style("width", function (d) {
-        return x(d) + "px";
-      })
-      .text(function (d) {
-        return d;
-      });
+      .style("width", (d:number) => x(d) + "px")
+      .text((d:number) => d);
 
   }
 
