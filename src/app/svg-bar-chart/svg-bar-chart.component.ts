@@ -60,7 +60,7 @@ export class SvgBarChartComponent implements OnInit {
 
     chart.attr("height", barHeight * parsedData.length);
 
-    bar = chart.selectAll("g")
+    bar = chart.selectAll<SVGElement, {}>("g")
       .data(parsedData)
       .enter().append("g")
       .attr("transform", (d, i) => "translate(0," + i * barHeight + ")");
@@ -74,6 +74,15 @@ export class SvgBarChartComponent implements OnInit {
       .attr("y", barHeight / 2)
       .attr("dy", ".35em")
       .text((d) => d.value);
+
+    let paragraphs: Selection<HTMLParagraphElement, Object, HTMLElement, Object>;
+    paragraphs = d3.selectAll<HTMLParagraphElement, Object>("p");
+    paragraphs = paragraphs.style("color", "white");
+    paragraphs.style("color", (d:undefined,i:number) => i % 2 ? "#fff" : "#eee"  );
+
+    d3.selectAll<HTMLParagraphElement, number>("p")
+      .data([4, 8, 15, 16, 23, 42])
+      .style("font-size", function(d) { return d + "px"; });
 
 
   }

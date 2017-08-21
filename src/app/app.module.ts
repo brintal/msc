@@ -13,13 +13,18 @@ import { AppComponent } from './app.component';
 import { HtmlBarChartComponent } from './html-bar-chart/html-bar-chart.component';
 import { SvgBarChartComponent } from './svg-bar-chart/svg-bar-chart.component';
 import { VerticalBarChartComponent } from './vertical-bar-chart/vertical-bar-chart.component';
+import {D3GmapsComponent} from "./d3-gmaps/d3-gmaps.component";
+
+
+// import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   declarations: [
     AppComponent,
     HtmlBarChartComponent,
     SvgBarChartComponent,
-    VerticalBarChartComponent
+    VerticalBarChartComponent,
+    D3GmapsComponent
   ],
   imports: [
     BrowserModule,
@@ -27,6 +32,9 @@ import { VerticalBarChartComponent } from './vertical-bar-chart/vertical-bar-cha
     HttpModule,
     HttpClientModule,
     AppRoutingModule
+    // ,AgmCoreModule.forRoot({
+    //   apiKey: 'AIzaSyBYV-WN6EWN4EBpHdq-5tr1x-mfpvFzPy4'
+    // })
   ],
   providers: [
     D3Service
