@@ -1,19 +1,23 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewEncapsulation} from '@angular/core';
 
 import * as d3 from 'd3';
+import {HttpClient} from "@angular/common/http";
 
 declare var google: any;
 
 @Component({
   selector: 'app-d3-gmaps',
   templateUrl: './d3-gmaps.component.html',
-  styleUrls: ['./d3-gmaps.component.css']
+  styleUrls: ['./d3-gmaps.component.css'],
+  encapsulation: ViewEncapsulation.None // without we need shadow piercing like >>> in front of the styles to also have effect on the svg
 })
 export class D3GmapsComponent implements OnInit {
 
   private parentNativeElement: any;
+  private http: HttpClient;
 
-  constructor(elementRef: ElementRef) {
+  constructor(elementRef: ElementRef, http: HttpClient) {
+    this.http = http;
     this.parentNativeElement = elementRef.nativeElement;
   }
 
@@ -21,25 +25,25 @@ export class D3GmapsComponent implements OnInit {
   ngOnInit() {
 
     var map = new google.maps.Map(d3.select("#map").node(), {
-      zoom: 8,
-      center: new google.maps.LatLng(37.76487, -122.41948),
+      zoom: 12,
+      center: new google.maps.LatLng(48.208043, 16.368739),
       mapTypeId: google.maps.MapTypeId.TERRAIN
     });
 
 // Load the station data. When the data comes back, create an overlay.
-    d3.json("/assets/data/stations.json", function(error, data) {
+    d3.json("http://localhost:8080/artifacts", function (error, data) {
       if (error) throw error;
 
       var overlay = new google.maps.OverlayView();
 
       // Add the container when the overlay is added to the map.
-      overlay.onAdd = function() {
+      overlay.onAdd = function () {
         var layer = d3.select(this.getPanes().overlayLayer).append("div")
           .attr("class", "stations");
 
         // Draw each marker as a separate SVG element.
         // We could use a single SVG, but what size would it have?
-        overlay.draw = function() {
+        overlay.draw = function () {
           var projection = this.getProjection(),
             padding = 10;
 
@@ -61,10 +65,12 @@ export class D3GmapsComponent implements OnInit {
             .attr("x", padding + 7)
             .attr("y", padding)
             .attr("dy", ".31em")
-            .text(function(d) { return d.key; });
+            .text(function (d) {
+              return d.value.title;
+            });
 
-          function transform(d:any) {
-            d = new google.maps.LatLng(d.value[1], d.value[0]);
+          function transform(d: any) {
+            d = new google.maps.LatLng(d.value.latitude, d.value.longitude);
             d = projection.fromLatLngToDivPixel(d);
             return d3.select(this)
               .style("left", (d.x - padding) + "px")
