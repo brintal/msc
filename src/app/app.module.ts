@@ -10,14 +10,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { D3Service } from 'd3-ng2-service';
 
 import { AppComponent } from './app.component';
-import { HtmlBarChartComponent } from './html-bar-chart/html-bar-chart.component';
-import { SvgBarChartComponent } from './svg-bar-chart/svg-bar-chart.component';
-import { VerticalBarChartComponent } from './vertical-bar-chart/vertical-bar-chart.component';
-import {D3GmapsComponent} from "./d3-gmaps/d3-gmaps.component";
-import {D3LeafletComponent} from "./d3-leaflet/d3-leaflet.component";
+import { HtmlBarChartComponent } from './components/html-bar-chart/html-bar-chart.component';
+import { SvgBarChartComponent } from './components/svg-bar-chart/svg-bar-chart.component';
+import { VerticalBarChartComponent } from './components/vertical-bar-chart/vertical-bar-chart.component';
+import {D3GmapsComponent} from "./components/d3-gmaps/d3-gmaps.component";
+import {D3LeafletComponent} from "./components/d3-leaflet/d3-leaflet.component";
+import {ArtifactImagesService} from "./shared/artifact-images.service";
 
-
-// import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   declarations: [
@@ -27,6 +26,7 @@ import {D3LeafletComponent} from "./d3-leaflet/d3-leaflet.component";
     VerticalBarChartComponent,
     D3GmapsComponent,
     D3LeafletComponent
+
   ],
   imports: [
     BrowserModule,
@@ -34,11 +34,9 @@ import {D3LeafletComponent} from "./d3-leaflet/d3-leaflet.component";
     HttpModule,
     HttpClientModule,
     AppRoutingModule
-    // ,AgmCoreModule.forRoot({
-    //   apiKey: 'AIzaSyBYV-WN6EWN4EBpHdq-5tr1x-mfpvFzPy4'
-    // })
   ],
   providers: [
+    ArtifactImagesService,
     D3Service
   ],
   bootstrap: [AppComponent]
